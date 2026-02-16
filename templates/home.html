@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <style>
+        /* Reset some default styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fdf6f0;
+            color: #333;
+            padding: 20px;
+        }
+
+        h2 {
+            color: #d96c75;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        p {
+            line-height: 1.8;
+            color: #555;
+            max-width: 800px;
+            margin: 0 auto 40px auto;
+            text-align: justify;
+            background-color: #fff8f5;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Grid container for images */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            width: 90%;
+            margin: 0 auto;
+        }
+
+        .grid-container img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 15px;
+            box-shadow: 0 6px 10px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .grid-container img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            p {
+                padding: 15px;
+            }
+
+            .grid-container img {
+                height: 150px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            .grid-container {
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h2>Welcome to the Cat Homepage!</h2>
+    
+    <p>
+        Cats, scientifically known as Felis catus, are small, domesticated carnivorous mammals that have been companions to humans for nearly 10,000 years.
+        <br><br>
+        <strong>Physical Traits:</strong> Domestic cats typically weigh between 6 to 15 pounds (2.7 to 7 kg) and stand about 8 to 10 inches (20 to 25 cm) tall at the shoulder. They possess retractable claws, sharp teeth, and acute senses, particularly in hearing and vision, which are adapted for hunting.
+        <br><br>
+        <strong>Behavior:</strong> Cats are known for their playful and curious nature. They are solitary hunters but can be social animals, often forming strong bonds with their human companions. Their communication includes vocalizations like meowing and purring, as well as body language.
+        <br><br>
+        <strong>History and Domestication:</strong> Cats were likely domesticated around 7500 BC in the Near East, primarily for their ability to control rodent populations. They have since become one of the most popular pets worldwide, with an estimated 600 million domestic cats today. While many cats live as pets, there are also feral cats that live independently of humans, often forming colonies in various environments.
+    </p>
+<H2>Gallery of Meme Cats</h2>
+<img src="{{ url_for('static', filename='images/image1.jpg') }}" alt="image1">
+<img src="{{ url_for('static', filename='images/image2.jpg') }}" alt="image2">
+<img src="{{ url_for('static', filename='images/image3.jpg') }}" alt="image3">
+<img src="{{ url_for('static', filename='images/image4.jpg') }}" alt="image4">
+
+</body>
+</html>

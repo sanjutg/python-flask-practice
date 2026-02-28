@@ -112,11 +112,12 @@
 
 
 
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash,session
 from db import get_db_connection
-
+from datetime import timedelta
 app = Flask(__name__)
 app.secret_key = "supersecretkey"  
+app.permanent_session_lifetime = timedelta(seconds=20)  
 @app.route("/")
 def home():
     return render_template("user.html")  
@@ -137,7 +138,6 @@ def login():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Ensure table exists
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS students (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -151,16 +151,24 @@ def login():
         conn.close()
 
         if student:
-            flash("Login successful!", "success")
-            return redirect(url_for("display"))  # main home page
-        else:
+            session.permanent = True
+            session["student_id"] = student[0]  
+            session["student_name"] = student[1] 
+        if "student_name" not in session:
             flash("Student not found! Please register.", "danger")
-            return redirect(url_for("default")) 
+            return redirect(url_for("default"))
+        else:
+            flash("Login successful!", "success")
+            return redirect(url_for("display"))
     return render_template("login.html")
 
 @app.route("/display")
 def display():
-    return render_template("home.html")  # main home page
+    if "student_name" not in session:
+        flash("Please login first!", "warning")
+        return redirect(url_for("login"))
+    name = session["student_name"]
+    return render_template("home.html", name=name)  
 
 @app.route("/default", methods=["GET", "POST"])
 def default():
@@ -209,6 +217,11 @@ def default():
         return redirect(url_for("login"))
 
     return render_template("form.html")
+@app.route("/logout")
+# Logout route
+def logout():
+    flash("You have been logged out.", "info")
+    return redirect(url_for("login"))
 
 if __name__ == "__main__":
     app.run(debug=True)

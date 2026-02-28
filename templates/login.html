@@ -43,13 +43,12 @@
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% if messages %}
         {% for category, message in messages %}
-          div class="flash" style="color:{% if category=='success' %}green{% else %}red{% endif %}">
+          <div class="flash {% if category=='success' %}success{% else %}error{% endif %}">
             {{ message }}
           </div>
         {% endfor %}
       {% endif %}
     {% endwith %}
-
     <form action="/login" method="POST">
         <input type="text" name="name" placeholder="Name" required>
         <input type="number" name="age" placeholder="Age" required>

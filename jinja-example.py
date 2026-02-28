@@ -112,23 +112,31 @@
 
 
 
-from flask import Flask, render_template, request, redirect, url_for, flash,session
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from db import get_db_connection
 from datetime import timedelta
 app = Flask(__name__)
-app.secret_key = "supersecretkey"  
-app.permanent_session_lifetime = timedelta(seconds=20)  
+@app.after_request
+def add_header(response):
+    response.cache_control.no_store = True
+    return response
+app.secret_key = "supersecretkey"
+app.permanent_session_lifetime = timedelta(minutes=1)
 @app.route("/")
 def home():
-    return render_template("user.html")  
+    return render_template("user.html")
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    if "student_name" in session:
+        return redirect(url_for("display"))
     if request.method == "POST":
         name = request.form.get("name")
         age = request.form.get("age")
+
         if not name or not age:
             flash("Please enter both name and age!", "danger")
             return redirect(url_for("login"))
+
         try:
             age = int(age)
         except ValueError:
@@ -146,30 +154,36 @@ def login():
                 email TEXT
             )
         """)
+
         cursor.execute("SELECT * FROM students WHERE name = ? AND age = ?", (name, age))
         student = cursor.fetchone()
         conn.close()
 
         if student:
             session.permanent = True
-            session["student_id"] = student[0]  
-            session["student_name"] = student[1] 
-        if "student_name" not in session:
-            flash("Student not found! Please register.", "danger")
-            return redirect(url_for("default"))
-        else:
+            session["student_id"] = student[0]
+            session["student_name"] = student[1]
             flash("Login successful!", "success")
             return redirect(url_for("display"))
+        else:
+            flash("Student not found! Please register.", "danger")
+            return redirect(url_for("default"))
+
     return render_template("login.html")
 
+
+# DISPLAY PAGE (after login)
 @app.route("/display")
 def display():
     if "student_name" not in session:
         flash("Please login first!", "warning")
         return redirect(url_for("login"))
-    name = session["student_name"]
-    return render_template("home.html", name=name)  
 
+    name = session["student_name"]
+    return render_template("home.html", name=name)
+
+
+# REGISTER
 @app.route("/default", methods=["GET", "POST"])
 def default():
     if request.method == "POST":
@@ -201,6 +215,7 @@ def default():
 
         cursor.execute("SELECT * FROM students WHERE name = ? AND age = ?", (name, age))
         student = cursor.fetchone()
+
         if student:
             flash("Student already registered! Please login.", "info")
             conn.close()
@@ -217,11 +232,15 @@ def default():
         return redirect(url_for("login"))
 
     return render_template("form.html")
+
+
+# LOGOUT
 @app.route("/logout")
-# Logout route
 def logout():
+    session.clear()
     flash("You have been logged out.", "info")
     return redirect(url_for("login"))
+
 
 if __name__ == "__main__":
     app.run(debug=True)
